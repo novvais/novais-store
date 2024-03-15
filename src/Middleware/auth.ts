@@ -1,18 +1,19 @@
-import { Request, Response, NextFunction } from 'express';
-import knex from "knex"
-import jwt from "jsonwebtoken"
+import { Request, Response, NextFunction } from "express";
+import { knex } from "../Connection/knex";
+import jwt from "jsonwebtoken";
+import { InternalServerError } from "../Helpers/api-erros";
 
-const checkLoggedUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { authorization } = req.headers;
+export async function Auth(req: Request, res: Response, next: NextFunction) {
+  const { authrization } = req.headers;
 
-  if (!authorization) {
-    return res.status(401).json({ message: "Not authorized." });
+  if (!authrization) {
+    return res.status(401).json({ error: "Token" });
   }
 
-  const token = authorization.split(" ")[1];
+  const [, token] = String(authrization).split(" ");
 
   try {
-    const { id } = jwt.verify(token, process.env.JW_SECRET);
+    const id  = jwt.verify(token, process.env.JW_SECRET);
 
     const user = await knex("users").where({ id }).first();
 
@@ -20,12 +21,10 @@ const checkLoggedUser = async (req: Request, res: Response, next: NextFunction) 
       return res.status(401).json({ message: "Not authorized." });
     }
 
-    req.user = user;
+    req.userID = user;
 
     next();
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    throw new InternalServerError(error.message);
   }
-};
-
-export { checkLoggedUser };
+}

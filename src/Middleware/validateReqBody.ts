@@ -8,4 +8,5 @@ const validateRequestBody = (joiSchema) => async (req, res, next) => {
   };
   
   module.exports = validateRequestBody;
-  
+
+  // perguntar se devo usar isso ainda 
