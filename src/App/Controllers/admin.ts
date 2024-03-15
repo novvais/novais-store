@@ -79,7 +79,7 @@ const loginAdm = async (req: Request, res: Response) => {
   }
 };
 
-const updateAdm = async (req: Request, res: Response) => {
+const updateAdm = async (req: Request | any, res: Response) => {
   const id = req.user.id;
   const { name, cpf, username, password } = req.body;
 
@@ -114,7 +114,7 @@ const updateAdm = async (req: Request, res: Response) => {
   }
 };
 
-const detailAdmProfile = async (req: Request, res: Response) => {
+const detailAdmProfile = async (req: Request | any, res: Response) => {
   const id = req.user.id;
 
   try {

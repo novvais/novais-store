@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/index"
+    "start": "npx ts-node ./src/index.ts"
   },
   "repository": "git+https://github.com/novvais/plant-store.git",
   "keywords": [],
