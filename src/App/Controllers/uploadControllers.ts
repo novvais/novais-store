@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { upload } from "../../storage";
 
-const file = async (req: Request, res: Response) => {
+export const fileController = async (req: Request, res: Response) => {
   const { file } = req;
 
   try {
@@ -16,5 +16,3 @@ const file = async (req: Request, res: Response) => {
     return res.status(400).json(error.message);
   }
 };
-
-export { file }
