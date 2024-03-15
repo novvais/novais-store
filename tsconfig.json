@@ -1,7 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    "esModuleInterop": true
-  }
+    "target": "ES2018", // Versão do Javascript para transpilar                                
+    "lib": ["ES2018"], //                                    
+    "module": "commonjs", //                              
+    "moduleResolution": "node10", //  
+    "typeRoots": [
+      "./src/@types"
+    ], // Para criar uma pasta de Types personalizados                                                                 
+    "resolveJsonModule": true, //                    
+    "allowJs": true, // Permite escrever codigo em JavaScript junto com TypeScript sem erro.              
+    "outDir": "./dist", // Sempre que transpilar o código para JavaScript, ele vai gerar dentro de uma pasta chamar "./dist"                     
+    "esModuleInterop": true, // Permite o projeto se comunicar melhor com bibliotecar ou frameworks que não tem boa compatibilidade com TypeScript                           
+    "forceConsistentCasingInFileNames": true, // So deixa ativo           
+    "strict": false, // vai fazer toda a verificação de forma estrita, significar que o TypeScript não vai deixar um paramêtro de função sem Type.                                     
+    "noImplicitAny": true,//                             
+  },
+  "include": ["src/**/*"], // O que for inserido dentro do include será os arquivos que o projeto vai está olhando para saber que tem TypeScript
+  "exclude": ["node_modues", ".gitignore", "dist"] // O que for inserido dentro do Exclude não será olhado pelo projeto
 }
