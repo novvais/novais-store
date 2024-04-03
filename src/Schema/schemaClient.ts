@@ -1,28 +1,22 @@
-import vine from "@vinejs/vine";
-import { uniqueRule } from "../Rules/unique";
+import * as yup from "yup";
 
 export class ValidatorClient {
-  static registerClientValidator = vine.object({
-    name: vine.string(),
-    email: vine
+  static registerClientValidator = yup.object({
+    name: yup.string().required(),
+    email: yup
       .string()
-      .email()
-      .use(uniqueRule({ table: "clients", column: "email" })),
-    password: vine.string().minLength(8).maxLength(32).confirmed(),
+      .email().required(),
+    password: yup.string().min(8).required(),
   });
 
-  static loginClientValidator = vine.object({
-    email: vine.string(),
-    password: vine.string().minLength(8).maxLength(32).confirmed(),
+  static loginClientValidator = yup.object({
+    email: yup.string().required(),
+    password: yup.string().required(),
   });
 
-  static updateClientValidator = vine.object({
-    name: vine.string().optional(),
-    cpf: vine
-      .string()
-      .regex(/^\d{11}$/)
-      .optional(),
-    username: vine.string().optional(),
-    password: vine.string().minLength(8).maxLength(32).confirmed().optional(),
+  static updateClientValidator = yup.object({
+    name: yup.string().optional(),
+    username: yup.string().optional(),
+    password: yup.string().min(8).optional(),
   });
 }

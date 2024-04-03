@@ -1,29 +1,28 @@
-import vine from "@vinejs/vine";
-import { uniqueRule } from "../Rules/unique";
+import * as yup from "yup";
 
 export class ValidatorAdm {
-  static registerAdmValidator = vine.object({
-    name: vine.string(),
-    cpf: vine
+  static registerAdmValidator = yup.object({
+    name: yup.string().required(),
+    cpf: yup
       .string()
-      .regex(/^\d{11}$/)
-      .use(uniqueRule({ table: "admins", column: "cpf" })),
-    username: vine.string(),
-    password: vine.string().minLength(8).maxLength(32).confirmed(),
+      .matches(/^\d{11}$/)
+      .required(),
+    username: yup.string().required(),
+    password: yup.string().min(8).required(),
   });
 
-  static loginAdmValidator = vine.object({
-    cpf: vine.string(),
-    password: vine.string().minLength(8).maxLength(32).confirmed(),
+  static loginAdmValidator = yup.object({
+    cpf: yup.string().required(),
+    password: yup.string().required(),
   });
 
-  static updateAdmValidator = vine.object({
-    name: vine.string().optional(),
-    cpf: vine
+  static updateAdmValidator = yup.object({
+    name: yup.string().optional(),
+    cpf: yup
       .string()
-      .regex(/^\d{11}$/)
+      .matches(/^\d{11}$/)
       .optional(),
-    username: vine.string().optional(),
-    password: vine.string().minLength(8).maxLength(32).confirmed().optional(),
+    username: yup.string().optional(),
+    password: yup.string().min(8).optional(),
   });
 }

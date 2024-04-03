@@ -2,7 +2,6 @@ import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import { knex } from "../Connection/knex";
 import jwt from "jsonwebtoken";
 import { Verify } from "../Helpers/bcrypt";
-import { At } from "../Helpers/date";
 
 interface RegisterClient {
   name: string;
@@ -39,6 +38,7 @@ export class ClientService {
         name: payload.name,
         email: payload.email,
         password: encryptedPassword,
+        created_at: new Date()
       })
       .returning("*");
 
@@ -66,7 +66,7 @@ export class ClientService {
       throw new BadRequestError("Invalid email and/or password.");
     }
 
-    const token = jwt.sign({ id: validateClient.id }, process.env.JW_SECRET, {
+    const token = jwt.sign({ id: validateClient.id }, "senhaSegura", {
       expiresIn: "8h",
     });
 
@@ -78,15 +78,38 @@ export class ClientService {
   }
 
   static async updateClientService(payload: UpdateClient, id: number) {
-    const encryptedPassword = await Verify.encryptedPass(payload.password);
+
+    if (payload.email) {
+      const validateCpf = await knex("users")
+      .where({ email: payload.email })
+      .whereNot({ id })
+      .whereNot({ deleted_at: null })
+      .first();
+
+      if (validateCpf) {
+        throw new BadRequestError("Email already registered");
+      }
+    }
+
+    const detailUser = await knex("users")
+      .where({ id })
+      .whereNot({ deleted_at: null })
+      .first();
+    
+    let encryptedPassword: string | undefined;
+
+    if (payload.password) {
+      encryptedPassword = await Verify.encryptedPass(payload.password);
+    }
 
     const updatedClient = await knex("users")
       .where({ id })
       .whereNot({ deleted_at: null })
       .update({
-        name: payload.name,
-        email: payload.email,
-        password: encryptedPassword,
+        name: payload.name || detailUser.name,
+        email: payload.email || detailUser.email,
+        password: encryptedPassword || detailUser.password,
+        updated_at: new Date()
       });
 
     if (!updatedClient) {
@@ -105,6 +128,6 @@ export class ClientService {
   }
 
   static async deleteClientService(id: number) {
-    await At.deleteAt("clients", id)
+    await knex("clients").where({ id }).update({ deleted_at: new Date() })
   }
 }

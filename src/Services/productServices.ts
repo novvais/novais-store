@@ -1,6 +1,5 @@
 import { knex } from "../Connection/knex";
 import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
-import { At } from "../Helpers/date";
 
 interface RegisterProduct {
   name: string;
@@ -39,6 +38,7 @@ export class ProductService {
         price: payload.price,
         categorie_id: payload.categorie_id,
         product_image: payload.product_image,
+        created_at: new Date()
       })
       .returning(
         "name, description, stock_quantity, price, categorie_id, product_image"
@@ -74,6 +74,7 @@ export class ProductService {
         price: payload.price,
         categorie_id: payload.categorie_id,
         product_image: payload.product_image,
+        updated_at: new Date()
       })
       .where({ id })
       .returning("*");
@@ -124,6 +125,6 @@ export class ProductService {
   }
 
   static async deleteProductService(id: number) {
-    await At.deleteAt("products", id);
+    await knex("products").where({ id }).update({ deleted_at: new Date() })
   }
 }

@@ -2,7 +2,6 @@ import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import { knex } from "../Connection/knex";
 import jwt from "jsonwebtoken";
 import { Verify } from "../Helpers/bcrypt";
-import { At } from "../Helpers/date";
 
 interface RegisterAdm {
   name: string;
@@ -25,9 +24,9 @@ interface UpdateAdm {
 
 export class AdmService {
   static async registerAdmService(payload: RegisterAdm) {
-    const admValidate = await knex("admin")
+    const admValidate = await knex("admins")
       .where({ cpf: payload.cpf })
-      .whereNot({ deleted_at: null })
+      .where({ deleted_at: null })
       .first();
 
     if (admValidate) {
@@ -36,12 +35,13 @@ export class AdmService {
 
     const encryptedPassword = await Verify.encryptedPass(payload.password);
 
-    const admData = await knex("users")
+    const admData = await knex("admins")
       .insert({
         name: payload.name,
         cpf: payload.cpf,
         username: payload.username,
         password: encryptedPassword,
+        created_at: new Date(),
       })
       .returning("*");
 
@@ -53,7 +53,7 @@ export class AdmService {
   static async loginAdmService(payload: LoginAdm) {
     const admValidate = await knex("admins")
       .where({ cpf: payload.cpf })
-      .whereNot({ deleted_at: null })
+      .where({ deleted_at: null })
       .first();
 
     if (!admValidate) {
@@ -69,9 +69,13 @@ export class AdmService {
       throw new BadRequestError("Invalid username and/or password.");
     }
 
-    const token = jwt.sign({ id: admValidate.id }, process.env.JW_SECRET, {
-      expiresIn: "8h",
-    });
+    const token = jwt.sign(
+      { id: admValidate.id },
+      process.env.JW_SECRET || "",
+      {
+        expiresIn: "8h",
+      }
+    );
 
     const { password: _, ...loginAdm } = admValidate;
 
@@ -81,46 +85,73 @@ export class AdmService {
   }
 
   static async updateAdmService(payload: UpdateAdm, id: number) {
-    const admValidate = await knex("admin")
-      .where({ cpf: payload.cpf })
-      .whereNot({ deleted_at: null })
-      .first();
+    if (payload.cpf) {
+      const validateCpf = await knex("admins")
+        .where({ cpf: payload.cpf })
+        .whereNot({ id })
+        .where({ deleted_at: null })
+        .first();
 
-    if (admValidate) {
-      throw new BadRequestError("CPF already registered");
+      if (validateCpf) {
+        throw new BadRequestError("CPF already registered");
+      }
     }
 
-    const encryptedPassword = await Verify.encryptedPass(payload.password);
+    if (payload.username) {
+      const validateUsername = await knex("admins")
+        .where({ username: payload.username })
+        .whereNot({ id })
+        .where({ deleted_at: null })
+        .first();
 
-    const admDataU = await knex("users")
+      if (validateUsername) {
+        throw new BadRequestError("Username already registered");
+      }
+    }
+
+    const detailAdm = await knex("admins")
       .where({ id })
+      .where({ deleted_at: null })
+      .first();
+
+    let encryptedPassword: string | undefined;
+
+    if (payload.password) {
+      encryptedPassword = await Verify.encryptedPass(payload.password);
+    }
+
+    const updateAdm = await knex("users")
+      .where({ id })
+      .where({ deleted_at: null })
       .update({
-        name: payload.name,
-        cpf: payload.cpf,
-        username: payload.username,
-        password: encryptedPassword,
+        name: payload.name || detailAdm.name,
+        cpf: payload.cpf || detailAdm.cpf,
+        username: payload.username || detailAdm.username,
+        password: encryptedPassword || detailAdm.password,
+        updated_at: new Date(),
       })
       .returning("*");
 
-    if (!admDataU) {
+    if (!updateAdm) {
       throw new BadRequestError("Unable to register admin.");
     }
   }
 
   static async detailAdmService(id: number) {
-    const admValidate = await knex("admin")
+    const admValidate = await knex("admins")
+      .select("name", "cpf")
       .where({ id })
-      .whereNot({ deleted_at: null })
+      .where({ deleted_at: null })
       .first();
 
     if (!admValidate) {
-      throw new NotFoundError("User not found.");
+      throw new NotFoundError("Admin not found.");
     }
 
     return admValidate;
   }
 
   static async deleteAdmService(id: number) {
-    await At.deleteAt("admins", id);
+    await knex("admins").where({ id }).update({ deleted_at: new Date() });
   }
 }

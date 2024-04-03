@@ -1,5 +1,4 @@
 import { knex } from "../Connection/knex";
-import { At } from "../Helpers/date";
 
 export class CategoriesService {
     static async listCategoriesService () { 
@@ -9,6 +8,6 @@ export class CategoriesService {
     }
 
     static async deleteCategoryService (id: number){
-        await At.deleteAt("categories", id);
+        await knex("categories").where({ id }).update({ deleted_at: new Date() })
     }
 }

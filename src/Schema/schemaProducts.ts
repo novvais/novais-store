@@ -1,21 +1,21 @@
-import vine from "@vinejs/vine";
+import * as yup from "yup";
 
 export class ValidatorProduct {
-  static registerValidator = vine.object({
-    name: vine.string(),
-    description: vine.string(),
-    strock_quantity: vine.number(),
-    price: vine.number(),
-    categorie_id: vine.number(),
-    product_image: vine.string()
+  static registerValidator = yup.object({
+    name: yup.string().required(),
+    description: yup.string().required(),
+    strock_quantity: yup.number().required(),
+    price: yup.number().required(),
+    categorie_id: yup.number().required(),
+    product_image: yup.string().required()
   });
 
-  static updateValidator = vine.object({
-    name: vine.string().optional(),
-    description: vine.string().optional(),
-    strock_quantity: vine.number().optional(),
-    price: vine.number().optional(),
-    categorie_id: vine.number().optional(),
-    product_image: vine.string().optional()
+  static updateValidator = yup.object({
+    name: yup.string().optional(),
+    description: yup.string().optional(),
+    strock_quantity: yup.number().optional(),
+    price: yup.number().optional(),
+    categorie_id: yup.number().optional(),
+    product_image: yup.string().optional()
   })
 }

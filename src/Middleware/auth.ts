@@ -3,7 +3,7 @@ import { knex } from "../Connection/knex";
 import jwt from "jsonwebtoken";
 import { InternalServerError } from "../Helpers/api-erros";
 
-export async function Auth(req: Request, res: Response, next: NextFunction) {
+export async function Auth(req: any, res: Response, next: NextFunction) {
   const { authrization } = req.headers;
 
   if (!authrization) {
@@ -13,7 +13,7 @@ export async function Auth(req: Request, res: Response, next: NextFunction) {
   const [, token] = String(authrization).split(" ");
 
   try {
-    const id  = jwt.verify(token, process.env.JW_SECRET);
+    const id  = jwt.verify(token, process.env.JW_SECRET || "");
 
     const user = await knex("users").where({ id }).first();
 
