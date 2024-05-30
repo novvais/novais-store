@@ -1,27 +1,11 @@
-import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import { knex } from "../Connection/knex";
+import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import jwt from "jsonwebtoken";
 import { Verify } from "../Helpers/bcrypt";
-
-interface RegisterClient {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface LoginClient {
-  email: string;
-  password: string;
-}
-
-interface UpdateClient {
-  name?: string;
-  email?: string;
-  password?: string;
-}
+import { IRegisterClient, ILoginClient, IUpdateClient } from "../interfaces/interfaceClient"
 
 export class ClientService {
-  static async registerClientService(payload: RegisterClient) {
+  static async registerClientService(payload: IRegisterClient) {
     const client = await knex("users")
       .where({ email: payload.email })
       .whereNot({ deleted_at: null })
@@ -47,7 +31,7 @@ export class ClientService {
     }
   }
 
-  static async LoginClientService(payload: LoginClient) {
+  static async LoginClientService(payload: ILoginClient) {
     const validateClient = await knex("users")
       .where({ email: payload.email })
       .whereNot({ deleted_at: null })
@@ -77,7 +61,7 @@ export class ClientService {
     return data;
   }
 
-  static async updateClientService(payload: UpdateClient, id: number) {
+  static async updateClientService(payload: IUpdateClient, id: number) {
 
     if (payload.email) {
       const validateCpf = await knex("users")

@@ -1,26 +1,9 @@
 import { knex } from "../Connection/knex";
 import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
-
-interface RegisterProduct {
-  name: string;
-  description: string;
-  stock_quantity?: number;
-  price: number;
-  categorie_id: number;
-  product_image: string;
-}
-
-interface UpdateProduct {
-  name?: string;
-  description?: string;
-  stock_quantity?: number;
-  price?: number;
-  categorie_id?: number;
-  product_image?: string;
-}
+import { IRegisterProduct, IUpdateProduct } from "../interfaces/interfaceProducts"
 
 export class ProductService {
-  static async registerProductService(payload: RegisterProduct) {
+  static async registerProductService(payload: IRegisterProduct) {
     const existingCategory = await knex("categories")
       .where({ id: payload.categorie_id })
       .whereNot({ deleted_at: null })
@@ -47,7 +30,7 @@ export class ProductService {
     return newProduct;
   }
 
-  static async updateProductService(payload: UpdateProduct, id: number) {
+  static async updateProductService(payload: IUpdateProduct, id: number) {
     const product = await knex("products")
       .where({ id })
       .whereNot({ deleted_at: null })
