@@ -4,7 +4,7 @@ import { InternalServerError } from "../Helpers/api-erros";
 import { AdmService } from "../Services/admServices";
 
 export class AdmController {
-  async registerAdm(req: Request, res: Response) {
+  async registerAdmController(req: Request, res: Response) {
     try {
       const payload = await ValidatorAdm.registerAdmValidator.validate(req.body);
 
@@ -18,7 +18,7 @@ export class AdmController {
     }
   }
 
-  async loginAdm(req: Request, res: Response) {
+  async loginAdmController(req: Request, res: Response) {
     try {
       const payload = await ValidatorAdm.loginAdmValidator.validate(req.body);
 
@@ -30,7 +30,7 @@ export class AdmController {
     }
   }
 
-  async updateAdm(req: Request, res: Response) {
+  async updateAdmController(req: Request, res: Response) {
     const id = req.params;
 
     try {
@@ -44,7 +44,7 @@ export class AdmController {
     }
   }
 
-  async detailAdmProfile(req: Request, res: Response) {
+  async detailAdmProfileController(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
@@ -56,7 +56,7 @@ export class AdmController {
     }
   }
 
-  async deleteAdm(req: Request, res: Response) {
+  async deleteAdmController(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
