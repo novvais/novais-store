@@ -1,7 +1,6 @@
 export interface IRegisterAdress {
     user_id: number
     cep: string
-    street: string
     adress: string
     residencial_number: number
     complement?: string
@@ -13,7 +12,6 @@ export interface IRegisterAdress {
 export interface IUpdateAdress {
     user_id?: number
     cep?: string
-    street?: string
     adress?: string
     residencial_number?: number
     complement?: string
