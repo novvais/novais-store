@@ -1,34 +1,9 @@
-import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
-import knex from "knex";
-
-interface RegisterCart {
-  client_id: number;
-  observation: string;
-  cart_products: [
-    {
-      product_id: number;
-      product_quantity: number;
-    }
-  ];
-}
-
-interface UpdateCart {
-  client_id?: number;
-  observation?: string;
-  cart_products?: {
-    product_id?: number;
-    product_quantity?: number;
-  };
-}
-
-interface ConfirmedProducts {
-  product_id: number;
-  product_quantity: number;
-  product_price: number;
-}
+import { knex } from "../Connection/knex";
+import { BadRequestError, NotFoundError } from "../Helpers/api-erros"
+import { IRegisterCart, IUpdateCart } from "../interfaces/interfaceCart"
 
 export class CartServices {
-  static async registerCartService(payload: RegisterCart) {
+  static async registerCartService(payload: IRegisterCart) {
     const validateClient = await knex("clients")
       .where({ id: payload.client_id })
       .where({ deleted_at: null })
@@ -38,67 +13,98 @@ export class CartServices {
       throw new NotFoundError("Client not found!");
     }
 
-    let productNotStock: number[] = [];
+    const validateProduct = await knex("products")
+      .where({ id: payload.product_id })
+      .where({ deleted_at: null })
+      .first();
 
-    let confirmedProducts: ConfirmedProducts[] = [];
+    if (!validateProduct) {
+      throw new NotFoundError("Product not found!");
+    }
 
-    let totalPrice: number = 0;
+    if (payload.product_quantity > validateProduct.product_quantity) {
+      throw new BadRequestError("Not enough stock of this product"); // PERGUNTAR SE PRECISA VERIFICAR ESSA PARTE, POIS PRODUTOS SEM ESTOQUE JÁ APRECEM NO SITE QUE NAO TEM ESTOQUE
+    }
 
-    for (const product of payload.cart_products) {
-      const { product_id, product_quantity } = product;
+    const priceProduct = await knex("products")
+      .select("price")
+      .where({ id: payload.product_id })
+      .first();
 
-      const validateProduct = await knex("products")
-        .where({ id: product_id })
-        .where({ deleted_at: null })
-        .first();
-
-      if (!validateProduct) {
-        throw new NotFoundError("Product not found!");
-      }
-
-      if (product_quantity > validateProduct.product_quantity) {
-        productNotStock.push(product.product_id);
-      }
-
-      const priceProduct = await knex("products")
-        .select("price")
-        .where({ id: product.product_id })
-        .first();
-
-      totalPrice += priceProduct.price;
-
-      confirmedProducts.push({
-        product_id,
-        product_quantity,
-        product_price: priceProduct.price,
+    const dataCart = await knex("carts")
+      .where({ id: payload.client_id })
+      .insert({
+        client_id: payload.client_id,
+        product_id: payload.product_id,
+        quantity: payload.product_quantity,
+        total_price: priceProduct,
+        finished: false,
+        created_at: new Date(),
+        update_at: new Date()
       });
 
-      const cartData = await knex("carts")
-        .insert({
-          client_id: payload.client_id,
-          observation: payload.observation,
-          total_price: totalPrice,
-        })
-        .returning("*");
+    return dataCart;
+  }
 
-      for (let i = 0; i < confirmedProducts.length; i++) {
-        await knex("orders").insert({
-          cart_id: cartData[0].id,
-          product_id: confirmedProducts[i].product_id,
-          product_quantity: confirmedProducts[i].product_quantity,
-          product_price: confirmedProducts[i].product_price,
-        });
-      }
+  static async updateCartService(payload: IUpdateCart) {
+    const validateClient = await knex("clients")
+      .where({ id: payload.client_id })
+      .where({ deleted_at: null })
+      .first();
 
-      return
+    if (!validateClient) {
+      throw new NotFoundError("Client not found!");
     }
+
+    const validateProduct = await knex("products")
+      .where({ id: payload.product_id })
+      .where({ deleted_at: null })
+      .first();
+
+    if (!validateProduct) {
+      throw new NotFoundError("Product not found!");
+    }
+
+    const productInCart = await knex("carts")
+      .where({ client_id: payload.client_id })
+      .where({ product_id: payload.product_id })
+      .first();
+
+    if (
+      payload.product_quantity + productInCart.quantity >
+      validateProduct.product_quantity
+    ) {
+      throw new BadRequestError("Not enough stock of this product"); 
+    }
+
+    const priceProduct = await knex("products")
+      .select("price")
+      .where({ id: payload.product_id })
+      .first();
+
+    const dataCart = await knex("carts")
+      .where({ id: payload.client_id })
+      .insert({
+        client_id: payload.client_id,
+        product_id: payload.product_id,
+        quantity: payload.product_quantity + productInCart.quantity,
+        total_price: priceProduct + productInCart.total_price,
+        finished: false,
+        update_at: new Date()
+      });
+
+      return dataCart
   }
 
   static async listCartService(id: number) {
-    const validateClient = await knex("orders")
-      .where({ client_id: id })
+    const validateClient = await knex("carts")
+      .where({ id })
       .first();
+
+    return;
   }
 
-  static async deleteCartService(id: number) {}
+  static async deleteCartService(id: number) {
+    await knex("carts").where({ id }).update({ deleted_at: new Date() });
+  }
 }
