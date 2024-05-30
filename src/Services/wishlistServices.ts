@@ -1,13 +1,9 @@
-import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import { knex } from "../Connection/knex";
-
-interface RegisterWishlist {
-  client_id: number;
-  product_id: number;
-}
+import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
+import { IRegisterWishlist } from "../interfaces/interfaceWishlist";
 
 export class WishlistServices {
-  static async registerWishlistService(payload: RegisterWishlist) {
+  static async registerWishlistService(payload: IRegisterWishlist) {
     const validateClient = await knex("clients")
       .where({ id: payload.client_id })
       .where({ deleted_at: null })
@@ -22,6 +18,7 @@ export class WishlistServices {
         client_id: payload.client_id,
         product_id: payload.product_id,
         created_at: new Date(),
+        update_at: new Date(),
       })
       .returning("*");
 
@@ -45,16 +42,16 @@ export class WishlistServices {
       .where({ deleted_at: null })
       .first();
 
-    return wishlistData
+    return wishlistData;
   }
 
-  static async deleteWishlistService (id: number[]) {
-    if (id.isArray()) {
-        for (const i of id) {
-            await knex("wishlists").where({ product_id: i }).update({ deleted_at: new Date() });
-        }
-    } else {
-        await knex("wishlists").where({ product_id: id }).update({ deleted_at: new Date() });
+  static async deleteWishlistService(id: number[]) {
+    for (const i of id) {
+      await knex("wishlists")
+        .where({ product_id: i })
+        .update({ deleted_at: new Date() });
     }
+
+    return;
   }
 }
