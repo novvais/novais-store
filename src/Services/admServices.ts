@@ -1,29 +1,12 @@
-import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import { knex } from "../Connection/knex";
+import { BadRequestError, NotFoundError } from "../Helpers/api-erros";
 import jwt from "jsonwebtoken";
 import { Verify } from "../Helpers/bcrypt";
+import { ILoginAdm, IRegisterAdm, IUpdateAdm } from "../interfaces/interfaceAdmin"
 
-interface RegisterAdm {
-  name: string;
-  cpf: string;
-  username: string;
-  password: string;
-}
-
-interface LoginAdm {
-  cpf: string;
-  password: string;
-}
-
-interface UpdateAdm {
-  name?: string;
-  cpf?: string;
-  username?: string;
-  password?: string;
-}
 
 export class AdmService {
-  static async registerAdmService(payload: RegisterAdm) {
+  static async registerAdmService(payload: IRegisterAdm) {
     const admValidate = await knex("admins")
       .where({ cpf: payload.cpf })
       .where({ deleted_at: null })
@@ -50,7 +33,7 @@ export class AdmService {
     }
   }
 
-  static async loginAdmService(payload: LoginAdm) {
+  static async loginAdmService(payload: ILoginAdm) {
     const admValidate = await knex("admins")
       .where({ cpf: payload.cpf })
       .where({ deleted_at: null })
@@ -84,7 +67,7 @@ export class AdmService {
     return data;
   }
 
-  static async updateAdmService(payload: UpdateAdm, id: number) {
+  static async updateAdmService(payload: IUpdateAdm, id: number) {
     if (payload.cpf) {
       const validateCpf = await knex("admins")
         .where({ cpf: payload.cpf })
@@ -148,7 +131,7 @@ export class AdmService {
       throw new NotFoundError("Admin not found.");
     }
 
-    return admValidate;
+    return 
   }
 
   static async deleteAdmService(id: number) {
