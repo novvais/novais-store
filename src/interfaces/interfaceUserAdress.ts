@@ -1,21 +1,19 @@
 export interface IRegisterAdress {
     user_id: number
     cep: string
-    adress: string
-    residencial_number: number
-    complement?: string
-    district: string
-    city: string
-    state: string
+    logadouro: string
+    complemento?: string
+    bairro: string
+    localidade: string
+    uf: string
 }
 
 export interface IUpdateAdress {
     user_id?: number
     cep?: string
-    adress?: string
-    residencial_number?: number
-    complement?: string
-    district?: string
-    city?: string
-    state?: string
+    logadouro?: string
+    complemento?: string
+    bairro?: string
+    localidade?: string
+    uf?: string
 }

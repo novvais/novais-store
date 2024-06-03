@@ -2,11 +2,14 @@ import { Request, Response } from "express";
 import { ValidatorAdm } from "../Schema/schemaAdm";
 import { InternalServerError } from "../Helpers/api-erros";
 import { AdmService } from "../Services/admServices";
+import { AuthCpf } from "../Middleware/authCpf"
 
 export class AdmController {
   async registerAdmController(req: Request, res: Response) {
     try {
       const payload = await ValidatorAdm.registerAdmValidator.validate(req.body);
+
+      AuthCpf(payload.cpf)
 
       await AdmService.registerAdmService(payload);
       

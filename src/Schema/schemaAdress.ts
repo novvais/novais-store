@@ -7,12 +7,11 @@ export class ValidatorAdress {
       .string()
       .matches(/^\d{8}$/)
       .required(),
-    adress: yup.string().required(),
-    residencial_number: yup.number().required(),
-    complement: yup.string().optional(),
-    district: yup.string().required(),
-    city: yup.string().required(),
-    state: yup.string().required(),
+    logadouro: yup.string().required(),
+    complemento: yup.number().optional(),
+    bairro: yup.string().optional(),
+    localidade: yup.string().required(),
+    uf: yup.string().required(),
   });
 
   static updateAdressValidator = yup.object({
@@ -21,11 +20,10 @@ export class ValidatorAdress {
       .string()
       .matches(/^\d{8}$/)
       .optional(),
-    adress: yup.string().optional(),
-    residencial_number: yup.number().optional(),
-    complement: yup.string().optional(),
-    district: yup.string().optional(),
-    city: yup.string().optional(),
-    state: yup.string().optional(),
+    logadouro: yup.string().optional(),
+    complemento: yup.number().optional(),
+    bairro: yup.string().optional(),
+    localidade: yup.string().optional(),
+    uf: yup.string().optional(),
   });
 }

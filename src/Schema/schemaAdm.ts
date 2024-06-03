@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { cpf } from "cpf-cnpj-validator"
 
 export class ValidatorAdm {
   static registerAdmValidator = yup.object({

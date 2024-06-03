@@ -4,9 +4,8 @@ import jwt from "jsonwebtoken";
 import { Verify } from "../Helpers/bcrypt";
 import { ILoginAdm, IRegisterAdm, IUpdateAdm } from "../interfaces/interfaceAdmin"
 
-
 export class AdmService {
-  static async registerAdmService(payload: IRegisterAdm) {
+  static async registerAdmService(payload: IRegisterAdm | any) {
     const admValidate = await knex("admins")
       .where({ cpf: payload.cpf })
       .where({ deleted_at: null })

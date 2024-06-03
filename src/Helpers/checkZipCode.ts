@@ -1,10 +1,8 @@
-import {
-  calcularPrecoPrazo,
-  consultarCep
-} from "correios-brasil";
+import { calcularPrecoPrazo, consultarCep } from "correios-brasil";
+import { IRegisterAdress } from "../interfaces/interfaceUserAdress";
 
 export class CheckZipCode {
-  static async consultZipCode(zipCode: string) {
+  static async consultZipCode(zipCode: IRegisterAdress | any) {
     // Cep pode ser String ou Number
     // 21770200 , '21770-200', '21770 200'.... qualquer um formato serve
 
@@ -12,7 +10,7 @@ export class CheckZipCode {
       console.log(response);
     });
 
-    return
+    return adress;
   }
 
   static async calculateFreight(zipCodeO: string, zipCodeD: string) {
@@ -20,7 +18,7 @@ export class CheckZipCode {
       sCepOrigem: zipCodeO,
       sCepDestino: zipCodeD,
       nVlPeso: process.env.NVL_WIGHT,
-      nCdFormato:process.env.NVL_FORMAT,
+      nCdFormato: process.env.NVL_FORMAT,
       nVlComprimento: process.env.NVL_LENGTH,
       nVlAltura: process.env.NVL_HEIGHT,
       nVlLargura: process.env.NVL_WIDTH,
