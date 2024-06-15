@@ -1,4 +1,4 @@
-import { instanceAxios } from "../Api/axios";
+import { instanceGatewayAxios } from "../Api/axios";
 import qs from "qs";
 import { ICard } from "../Interfaces/interfaceStripe";
 import { InternalServerError } from "../Helpers/api-erros";
@@ -10,7 +10,7 @@ export class Stripe {
     console.log(dataCard)
 
     try {
-      const { data: tokenCard } = await instanceAxios.post("/tokens", dataCard);
+      const { data: tokenCard } = await instanceGatewayAxios.post("/tokens", dataCard);
 
       return tokenCard;
     } catch (error: any) {
@@ -26,7 +26,7 @@ export class Stripe {
     });
 
     try {
-      const { data: cobrança } = await instanceAxios.post(
+      const { data: cobrança } = await instanceGatewayAxios.post(
         "/charges",
         dataPayments
       );
@@ -43,7 +43,7 @@ export class Stripe {
     })
 
     try {
-      const { data: refund } = await instanceAxios.post("/refunds", dataRefund)
+      const { data: refund } = await instanceGatewayAxios.post("/refunds", dataRefund)
 
       return refund
     } catch (error: any) {
