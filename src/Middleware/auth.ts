@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { knex } from "../Connection/knex";
 import jwt from "jsonwebtoken";
 import { InternalServerError } from "../Helpers/api-erros";
@@ -24,7 +24,7 @@ export async function Auth(req: any, res: Response, next: NextFunction) {
     req.userID = user;
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     throw new InternalServerError(error.message);
   }
 }
