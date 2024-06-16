@@ -1,14 +1,12 @@
 import * as yup from "yup";
-import { cpf } from "cpf-cnpj-validator"
 
 export class ValidatorAdm {
   static registerAdmValidator = yup.object({
     name: yup.string().required(),
     cpf: yup
       .string()
-      .matches(/^\d{11}$/)
+      .matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
       .required(),
-    username: yup.string().required(),
     password: yup.string().min(8).required(),
   });
 
@@ -21,9 +19,8 @@ export class ValidatorAdm {
     name: yup.string().optional(),
     cpf: yup
       .string()
-      .matches(/^\d{11}$/)
+      .matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
       .optional(),
-    username: yup.string().optional(),
     password: yup.string().min(8).optional(),
   });
 }
