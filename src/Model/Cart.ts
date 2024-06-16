@@ -1,7 +1,15 @@
 import { Client } from "./Client";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Product } from "./Product";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Order } from "./Order";
+import { Items_Cart } from "./Items_Cart";
 
 @Entity({
   name: "carts",
@@ -9,39 +17,26 @@ import { Order } from "./Order";
 export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
-  
-  @Column()
-  client_id: number
 
   @Column()
-  product_id: number
+  client_id: number;
 
   @Column()
-  quantity: number
+  created_at: Date;
 
   @Column()
-  total_price: number
-
-  @Column()
-  finished: boolean
-
-  @Column()
-  created_at: Date
-
-  @Column()
-  updated_at: Date
+  updated_at: Date;
 
   @Column({ nullable: true })
-  deleted_at: Date
+  deleted_at: Date;
 
-  @ManyToOne(() => Client, client => client.carts)
+  @ManyToOne(() => Client, (client) => client.carts)
   @JoinColumn({ name: "client_id" })
-  client: Client
+  client: Client;
 
-  @OneToMany(() => Product, product => product.cart)
-  @JoinColumn({ name: "product_id" })
-  products: Product[]
+  @OneToMany(() => Items_Cart, (items_cart) => items_cart.cart)
+  items_carts: Items_Cart;
 
-  @OneToOne(() => Order, order => order.cart)
-  order: Order
+  @OneToOne(() => Order, (order) => order.cart)
+  order: Order;
 }

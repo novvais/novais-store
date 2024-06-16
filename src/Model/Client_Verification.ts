@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "./Product";
 
 @Entity({
-  name: "clients_verification",
+  name: "client_verifications",
 })
 export class Client_Verification {
   @PrimaryGeneratedColumn()
@@ -20,7 +20,7 @@ export class Client_Verification {
   @Column({ nullable: true })
   deleted_at: Date
 
-  @OneToMany(() => Product, product => product.client_verifications)
+  @ManyToOne(() => Product, (product) => product.client_verification)
   @JoinColumn({ name: "product_id" })
   products: Product[]
 }

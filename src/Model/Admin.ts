@@ -10,7 +10,7 @@ export class Admin {
   @Column()
   name: string
 
-  @Column({ unique: true })
+  @Column()
   cpf: string
 
   @Column()

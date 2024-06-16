@@ -1,9 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Cart } from "./Cart";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { File } from "./Files";
 import { Category } from "./Category";
 import { Client_Verification } from "./Client_Verification";
 import { Wishlist } from "./Wishlist";
+import { Items_Cart } from "./Items_Cart";
 
 @Entity({
   name: "products",
@@ -11,51 +18,66 @@ import { Wishlist } from "./Wishlist";
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
-  
-  @Column()
-  name: string
 
   @Column()
-  description: string
+  name: string;
 
   @Column()
-  stock: number
+  description: string;
 
   @Column()
-  price: number
+  stock: number;
 
   @Column()
-  size: string
+  price: number;
 
   @Column()
-  category_id: number
+  size: string;
 
   @Column()
-  image_id: number
-
-  @Column()
-  created_at: Date
-
-  @Column()
-  updated_at: Date
+  category_id: number;
 
   @Column({ nullable: true })
-  deleted_at: Date
+  image_id: number;
 
-  @ManyToOne(() => Cart, cart => cart.products)
-  cart: Cart
+  @Column()
+  width: number
 
-  @OneToMany(() => File, file => file.product)
+  @Column()
+  height: number
+
+  @Column()
+  length: number
+
+  @Column()
+  weight: number
+
+  @Column()
+  created_at: Date;
+
+  @Column()
+  updated_at: Date;
+
+  @Column({ nullable: true })
+  deleted_at: Date;
+
+  @OneToMany(() => Items_Cart, (item_cart) => item_cart.products)
+  items_cart: Items_Cart;
+
+  @OneToMany(() => File, (file) => file.product)
   @JoinColumn({ name: "image_id" })
-  files: File[]
+  files: File[];
 
-  @OneToMany(() => Category, category => category.product)
+  @ManyToOne(() => Category, (category) => category.product)
   @JoinColumn({ name: "category_id" })
-  categories: Category[]
+  categories: Category[];
 
-  @ManyToOne(() => Client_Verification, client_verification => client_verification.products)
-  client_verifications: Client_Verification
+  @OneToMany(
+    () => Client_Verification,
+    (client_verification) => client_verification.products
+  )
+  client_verification: Client_Verification;
 
-  @OneToMany(() => Wishlist, wishlist => wishlist.product)
-  wishlists: Wishlist
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.product)
+  wishlists: Wishlist;
 }

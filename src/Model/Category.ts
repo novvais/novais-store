@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "./Product";
 
 @Entity({
@@ -20,6 +20,6 @@ export class Category {
   @Column({ nullable: true })
   deleted_at: Date
 
-  @ManyToOne(() => Product, product => product.categories)
+  @OneToMany(() => Product, (product) => product.categories)
   product: Product
 }

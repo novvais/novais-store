@@ -8,9 +8,6 @@ import { Client } from "./Client";
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
- 
-  @Column()
-  client_id: number
   
   @Column()
   cart_id: number
@@ -21,6 +18,12 @@ export class Order {
   @Column()
   transaction_id: string
 
+  @Column({ default: false })
+  finished: boolean
+
+  @Column({ default: false })
+  refund: boolean
+
   @Column()
   created_at: Date
 
@@ -29,10 +32,6 @@ export class Order {
 
   @Column({ nullable: true })
   deleted_at: Date
-
-  @ManyToOne(() => Client, client => client.orders)
-  @JoinColumn({ name: "client_id" })
-  client: Client
 
   @OneToOne(() => Cart, cart => cart.order)
   @JoinColumn({ name: "cart_id" })
