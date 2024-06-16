@@ -30,3 +30,15 @@ export class InternalServerError extends ApiError {
     super(message, 500)
   }
 }
+
+export class PaymentsError extends ApiError {
+  constructor(message: string) {
+    super(message, 402)
+  }
+}
+
+export class ForbiddenError extends ApiError {
+  constructor(message: string) {
+      super(message, 403)
+  }
+}
